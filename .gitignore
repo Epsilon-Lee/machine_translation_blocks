@@ -4,3 +4,4 @@
 *.tok
 *.shuf
 *log
+*.npz
