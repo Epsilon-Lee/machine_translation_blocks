@@ -1,0 +1,6 @@
+*.pyc
+*history
+*.pkl
+*.tok
+*.shuf
+*log
