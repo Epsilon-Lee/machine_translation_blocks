@@ -1,7 +1,10 @@
 *.pyc
 *history
+<<<<<<< HEAD
 *.pkl
 *.tok
 *.shuf
 *log
 *.npz
+=======
+>>>>>>> 41f7521a2b1e9ca418c87724732311aec6c652fd

@@ -54,12 +54,21 @@ def get_config_de2en():
     config['stream'] = 'stream'
 
     # Source and target vocabularies
+<<<<<<< HEAD
     config['src_vocab'] = datadir + 'vocab.de-en.de.pkl'
     config['trg_vocab'] = datadir + 'vocab.de-en.en.pkl'
 
     # Source and target datasets
     config['src_data'] = datadir + 'bitext.de.tok.shuf'
     config['trg_data'] = datadir + 'bitext.en.tok.shuf'
+=======
+    config['src_vocab'] = datadir + 'vocab.de.pkl'
+    config['trg_vocab'] = datadir + 'vocab.en.pkl'
+
+    # Source and target datasets
+    config['src_data'] = datadir + 'bitext.de.tok.txt'
+    config['trg_data'] = datadir + 'bitext.en.tok.txt'
+>>>>>>> 41f7521a2b1e9ca418c87724732311aec6c652fd
 
     # Source and target vocabulary sizes, should include bos, eos, unk tokens
     config['src_vocab_size'] = 30000
@@ -80,10 +89,17 @@ def get_config_de2en():
     config['bleu_script'] =  '.tool/multi-bleu.perl'
 
     # Validation set source file
+<<<<<<< HEAD
     config['val_set'] = datadir + 'dev.de.tok'
 
     # Validation set gold file
     config['val_set_grndtruth'] = datadir + 'dev.en.tok'
+=======
+    config['val_set'] = datadir + 'dev.de.tok.txt'
+
+    # Validation set gold file
+    config['val_set_grndtruth'] = datadir + 'dev.en.tok.txt'
+>>>>>>> 41f7521a2b1e9ca418c87724732311aec6c652fd
 
     # Print validation output to file
     config['output_val_set'] = True
