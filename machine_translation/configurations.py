@@ -54,7 +54,6 @@ def get_config_de2en():
     config['stream'] = 'stream'
 
     # Source and target vocabularies
-<<<<<<< HEAD
     config['src_vocab'] = datadir + 'vocab.de-en.de.pkl'
     config['trg_vocab'] = datadir + 'vocab.de-en.en.pkl'
 
