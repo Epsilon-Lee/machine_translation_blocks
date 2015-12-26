@@ -77,7 +77,7 @@ def get_config_de2en():
     config['normalized_bleu'] = True
 
     # Bleu script that will be used (moses multi-perl in this case)
-    config['bleu_script'] =  '.tool/multi-bleu.perl'
+    config['bleu_script'] =  'tool/multi-bleu.perl'
 
     # Validation set source file
     config['val_set'] = datadir + 'dev.de.tok'
