@@ -97,7 +97,7 @@ def get_config_de2en():
     # Timing/monitoring related -----------------------------------------------
 
     # Maximum number of updates
-    config['finish_after'] = 1000000
+    config['finish_after'] = 100000
 
     # Reload model from files if exist
     config['reload'] = True
