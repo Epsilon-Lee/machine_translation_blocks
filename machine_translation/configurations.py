@@ -1,3 +1,4 @@
+import os
 def get_config_de2en():
     config = {}
 
@@ -15,7 +16,7 @@ def get_config_de2en():
     config['dec_embed'] = 620
 
     # Where to save model, this corresponds to 'prefix' in groundhog
-    config['saveto'] = 'search_model_de2en'
+    config['saveto'] = os.path.curdir 
 
     # Optimization related ----------------------------------------------------
 
@@ -43,7 +44,7 @@ def get_config_de2en():
     config['weight_noise_rec'] = False
 
     # Dropout ratio, applied only after readout maxout
-    config['dropout'] = 1.0
+    config['dropout'] = 0.5
 
     # Vocabulary/dataset related ----------------------------------------------
 
@@ -103,7 +104,7 @@ def get_config_de2en():
     config['reload'] = True
 
     # Save model after this many updates
-    config['save_freq'] = 500
+    config['save_freq'] = 200
 
     # Show samples from model after this many updates
     config['sampling_freq'] = 13
@@ -112,9 +113,9 @@ def get_config_de2en():
     config['hook_samples'] = 2
 
     # Validate bleu after this many updates
-    config['bleu_val_freq'] = 5000
+    config['bleu_val_freq'] = 1000
 
     # Start bleu validation after this many updates
-    config['val_burn_in'] = 80000
+    config['val_burn_in'] = 20000
 
     return config

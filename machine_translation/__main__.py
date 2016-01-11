@@ -16,7 +16,7 @@ import argparse
 import logging
 import pprint
 
-import configurations
+#import configurations
 
 from machine_translation import main
 from machine_translation.stream import get_tr_stream, get_dev_stream
@@ -31,6 +31,7 @@ parser.add_argument("--proto",  default="get_config_de2en",
 parser.add_argument("--bokeh",  default=False, action="store_true",
                     help="Use bokeh server for plotting")
 parser.add_argument("--gpu",  default="gpu0", help="choose a GPU to use")
+parser.add_argument("--configuration_dir", help="Choose the dir where configurations file is placed.")
 args = parser.parse_args()
 
 
@@ -38,6 +39,7 @@ if __name__ == "__main__":
     #setting up GPU
     theano.sandbox.cuda.use(args.gpu)
     # Get configurations for model
+    configurations = __import__('configurations',fromlist=[args.configuration_dir])
     configuration = getattr(configurations, args.proto)()
     logger.info("Model options:\n{}".format(pprint.pformat(configuration)))
     # Get data streams and call main
