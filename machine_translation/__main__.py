@@ -16,8 +16,6 @@ import argparse
 import logging
 import pprint
 
-#import configurations
-
 from machine_translation import main
 from machine_translation.stream import get_tr_stream, get_dev_stream
 import theano.sandbox.cuda
@@ -39,9 +37,8 @@ if __name__ == "__main__":
     #setting up GPU
     theano.sandbox.cuda.use(args.gpu)
     # Get configurations for model
-    configurations = __import__('configurations',fromlist=[args.configuration_dir])
-    configuration = getattr(configurations, args.proto)()
+    configurations_module = __import__(args.configuration_dir,fromlist=['configurations'])
+    configuration = getattr(configurations_module.configurations, args.proto)()
     logger.info("Model options:\n{}".format(pprint.pformat(configuration)))
     # Get data streams and call main
-    main(configuration, get_tr_stream(**configuration),
-         get_dev_stream(**configuration), args.bokeh)
+    main(configuration, get_tr_stream(**configuration), get_dev_stream(**configuration), args.bokeh)
