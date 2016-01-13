@@ -170,3 +170,38 @@ class LoadNMT(TrainingExtension, SaveLoadUtils):
             main_loop.log = self.load_log()
         except Exception as e:
             logger.error(" Error {0}".format(str(e)))
+
+class LoadData(SaveLoadUtils):
+    def __init__(self, saveto, **kwargs):
+        self.folder = saveto
+        super(LoadData, self).__init__(**kwargs)
+    def load_parameters(self):
+        return self.load_parameter_values(self.path_to_parameters)
+    def load_to(self,model):
+        """Loads the dump from the root folder into the main loop."""
+        logger.info(" Reloading model")
+        try:
+            logger.info(" ...loading model parameters")
+            params_all = self.load_parameters()
+            params_this = model.get_parameter_dict()
+            missing = set(params_this.keys()) - set(params_all.keys())
+            for pname in params_this.keys():
+                if pname in params_all:
+                    val = params_all[pname]
+                    if params_this[pname].get_value().shape != val.shape:
+                        logger.warning(
+                            " Dimension mismatch {}-{} for {}"
+                            .format(params_this[pname].get_value().shape,
+                                    val.shape, pname))
+
+                    params_this[pname].set_value(val)
+                    logger.info(" Loaded to CG {:15}: {}"
+                                .format(val.shape, pname))
+                else:
+                    logger.warning(
+                        " Parameter does not exist: {}".format(pname))
+            logger.info(
+                " Number of parameters loaded for computation graph: {}"
+                .format(len(params_this) - len(missing)))
+        except Exception as e:
+            logger.error(" Error {0}".format(str(e)))

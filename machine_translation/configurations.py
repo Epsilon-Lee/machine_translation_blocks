@@ -16,7 +16,7 @@ def get_config_de2en():
     config['dec_embed'] = 620
 
     # Where to save model, this corresponds to 'prefix' in groundhog
-    config['saveto'] = os.path.curdir 
+    config['saveto'] = 'search_model_de2en'
 
     # Optimization related ----------------------------------------------------
 

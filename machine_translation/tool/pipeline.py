@@ -35,6 +35,12 @@ parser.add_argument("--dev_source",
 parser.add_argument("--dev_target",
                     type=str,
                     help="The target language")
+parser.add_argument("--test_source",
+                    type=str,
+                    help="The test source set")
+parser.add_argument("--test_target",
+                    type=str,
+                    help="The test target set")
 
 def tokenize_text_files(files_to_tokenize, tokenizer):
     for name in files_to_tokenize:
@@ -133,5 +139,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     tokenize_text_files([args.source_input,args.target_input],'../tool/tokenizer.perl')
     tokenize_text_files([args.dev_source,args.dev_target],'../tool/tokenizer.perl')
+    tokenize_text_files([args.test_source,args.test_target],'../tool/tokenizer.perl')
     src_filename, trg_filename = create_vocabularies([args.source_input,args.target_input], '../tool/preprocess.py')
     shuffle_parallel(src_filename,trg_filename)

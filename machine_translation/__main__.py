@@ -37,8 +37,12 @@ if __name__ == "__main__":
     #setting up GPU
     theano.sandbox.cuda.use(args.gpu)
     # Get configurations for model
-    configurations_module = __import__(args.configuration_dir,fromlist=['configurations'])
-    configuration = getattr(configurations_module.configurations, args.proto)()
+    if args.configuration_dir:
+        configurations_module = __import__(args.configuration_dir,fromlist=['configurations'])
+        configuration = getattr(configurations_module.configurations, args.proto)()
+    else:
+        configurations_module = __import__('configurations')
+        configuration = getattr(configurations_module, args.proto)()
     logger.info("Model options:\n{}".format(pprint.pformat(configuration)))
     # Get data streams and call main
     main(configuration, get_tr_stream(**configuration), get_dev_stream(**configuration), args.bokeh)

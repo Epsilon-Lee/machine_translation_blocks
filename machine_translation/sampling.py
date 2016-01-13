@@ -302,3 +302,93 @@ class ModelInfo:
             path, 'best_bleu_model_%d_BLEU%.2f.npz' %
             (int(time.time()), self.bleu_score) if path else None)
         return gen_path
+
+class Bleuevaluator(SamplingBase):
+    def __init__(self, source_sentence, data_stream,config,samples,search_model_de2en,
+                 trg_vocab,val_set_grndtruth,n_best=10,valuation_out='valuation_out.txt'):
+        """
+        :param data_stream:  Test Set data stream
+        :param config: Configurations for parameters
+        :return:
+        """
+        # This is a tensor variable
+        self.source_sentence = source_sentence
+        # This is the actual data stream
+        self.data_stream = data_stream
+        self.config = config
+        self.verbose = True
+        self.samples = samples
+        self.beam_search = BeamSearch(samples=samples)
+        # Using length normalization for performance boosting
+        self.normalize = True
+        # Vocabulary word2id from the source side
+        self.vocab = data_stream.dataset.dictionary
+        # Vocabulary id2word for the target side
+        self.trg_ivocab = {v: k for k, v in trg_vocab.items()}
+        # Using n_best list
+        self.n_best = n_best
+         # Helpers
+        self.unk_sym = self.data_stream.dataset.unk_token
+        self.eos_sym = self.data_stream.dataset.eos_token
+        self.unk_idx = self.vocab[self.unk_sym]
+        self.eos_idx = self.vocab[self.eos_sym]
+        # The PIPE cmd for bleu valuation
+        self.multibleu_cmd = ['perl', self.config['bleu_script'],
+                              val_set_grndtruth, '<']
+        # The place to put valuation result
+        self.valuation_out = valuation_out
+
+    def evaluate_model(self):
+        """
+        Start evaluating the model
+        :return:  None
+        """
+        logger.info("Started Evaluation: ")
+        # Total cost for decoding
+        total_cost = 0.0
+        # Open translation file for writing
+        if self.verbose:
+            ftrans = open(os.path.join(self.config['saveto'],self.valuation_out), 'w')
+        # Read every epoch
+        for i, line in enumerate(self.data_stream.get_epoch_iterator()):
+            """
+            Load the sentence, retrieve the sample, write to file
+            """
+            seq = self._oov_to_unk(
+                line[0], self.config['src_vocab_size'], self.unk_idx)
+            input_ = numpy.tile(seq, (self.config['beam_size'], 1))
+            # draw sample, checking to ensure we don't get an empty string back
+            trans, costs = \
+                self.beam_search.search(
+                    input_values={self.source_sentence: input_},
+                    max_length=3*len(seq), eol_symbol=self.eos_idx,
+                    ignore_first_eol=True)
+
+            # normalize costs according to the sequence lengths
+            if self.normalize:
+                lengths = numpy.array([len(s) for s in trans])
+                costs = costs / lengths
+
+            nbest_idx = numpy.argsort(costs)[:self.n_best]
+            for j, best in enumerate(nbest_idx):
+                try:
+                    total_cost += costs[best]
+                    trans_out = trans[best]
+
+                    # convert idx to words
+                    trans_out = self._idx_to_word(trans_out, self.trg_ivocab)
+
+                except ValueError:
+                    logger.info(
+                        "Can NOT find a translation for line: {}".format(i+1))
+                    trans_out = '<UNK>'
+
+                if j == 0:
+                    # Write to subprocess and file if it exists
+                    print(trans_out)
+                    if self.verbose:
+                        print(trans_out, file=ftrans)
+
+        self.data_stream.reset()
+        if self.verbose:
+            ftrans.close()
