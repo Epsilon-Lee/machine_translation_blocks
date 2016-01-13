@@ -59,7 +59,7 @@ if __name__ == "__main__":
             ComputationGraph(generated[1]))  # generated[1] is next_outputs
     # Data directory
     datadir = 'de-en-data'
-    test_stream = get_dev_stream(val_set= os.path.join(datadir,'test.de.tok'),
+    test_stream = get_dev_stream(val_set= os.path.join(datadir,'test.de.small.tok'),
                                  src_vocab=os.path.join(datadir,'vocab.de-en.de.pkl'),
                                  src_vocab_size=30000)
     load_tedtalk = LoadData(saveto=config['saveto'])

@@ -11,7 +11,7 @@ from blocks.extensions.saveload import SAVED_TO, LOADED_FROM
 from blocks.extensions import TrainingExtension, SimpleExtension
 from blocks.serialization import secure_dump, load, BRICK_DELIMITER
 from blocks.utils import reraise_as
-
+import re
 logger = logging.getLogger(__name__)
 
 
@@ -174,8 +174,10 @@ class LoadNMT(TrainingExtension, SaveLoadUtils):
 class LoadData(SaveLoadUtils):
     def __init__(self, saveto, **kwargs):
         self.folder = saveto
-        super(LoadData, self).__init__(**kwargs)
+        super(LoadData,self).__init__(**kwargs)
     def load_parameters(self):
+        #for fn in os.listdir(self.saveto):
+        #    if re.match('^best_bleu_model.*',fn):
         return self.load_parameter_values(self.path_to_parameters)
     def load_to(self,model):
         """Loads the dump from the root folder into the main loop."""

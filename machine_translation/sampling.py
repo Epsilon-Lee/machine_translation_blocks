@@ -305,7 +305,7 @@ class ModelInfo:
 
 class Bleuevaluator(SamplingBase):
     def __init__(self, source_sentence, data_stream,config,samples,search_model_de2en,
-                 trg_vocab,val_set_grndtruth,n_best=10,valuation_out='valuation_out.txt'):
+                 trg_vocab,val_set_grndtruth,n_best=1,valuation_out='valuation_out.txt'):
         """
         :param data_stream:  Test Set data stream
         :param config: Configurations for parameters
@@ -385,9 +385,9 @@ class Bleuevaluator(SamplingBase):
 
                 if j == 0:
                     # Write to subprocess and file if it exists
-                    print(trans_out)
+                    print("{}: {}".format(str(i),trans_out))
                     if self.verbose:
-                        print(trans_out, file=ftrans)
+                        print(trans_out[:-1], file=ftrans)
 
         self.data_stream.reset()
         if self.verbose:
