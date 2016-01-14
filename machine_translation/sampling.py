@@ -345,6 +345,7 @@ class Bleuevaluator(SamplingBase):
         """
         logger.info("Started Evaluation: ")
         # Total cost for decoding
+        mb_subprocess = Popen(self.multibleu_cmd, stdin=PIPE, stdout=PIPE)
         total_cost = 0.0
         # Open translation file for writing
         if self.verbose:
@@ -387,8 +388,25 @@ class Bleuevaluator(SamplingBase):
                     # Write to subprocess and file if it exists
                     print("{}: {}".format(str(i),trans_out))
                     if self.verbose:
-                        print(trans_out[:-1], file=ftrans)
-
+                        print(trans_out, file=ftrans)
+            if i != 0 and i % 100 == 0:
+                logger.info(
+                    "Translated {} lines of validation set...".format(i))
+            
+            mb_subprocess.stdin.flush()
+        
         self.data_stream.reset()
         if self.verbose:
             ftrans.close()
+        # send end of file, read output.
+        mb_subprocess.stdin.close()
+        stdout = mb_subprocess.stdout.readline()
+        logger.info(stdout)
+        out_parse = re.match(r'BLEU = [-.0-9]+', stdout)
+        assert out_parse is not None
+
+        # extract the score
+        bleu_score = float(out_parse.group()[6:])
+        logger.info(bleu_score)
+        
+        mb_subprocess.terminate()

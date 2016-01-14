@@ -12,6 +12,8 @@ import os
 import pickle
 logger = logging.getLogger(__name__)
 from checkpoint import LoadData
+from stream import _ensure_special_tokens
+import cPickle
 # Use argparser to parse
 parser = argparse.ArgumentParser()
 parser.add_argument("--proto",  default="get_config_de2en",
@@ -19,6 +21,7 @@ parser.add_argument("--proto",  default="get_config_de2en",
 parser.add_argument("--gpu",  default="gpu0", help="choose a GPU to use")
 parser.add_argument("--configuration_dir", default= '', help="Choose the dir where configurations file is placed.")
 args = parser.parse_args()
+
 
 if __name__ == "__main__":
     """
@@ -58,21 +61,25 @@ if __name__ == "__main__":
         bricks=[decoder.sequence_generator], name="outputs")(
             ComputationGraph(generated[1]))  # generated[1] is next_outputs
     # Data directory
-    datadir = 'de-en-data'
-    test_stream = get_dev_stream(val_set= os.path.join(datadir,'test.de.small.tok'),
+    datadir = config['datadir']
+    test_stream = get_dev_stream(val_set= os.path.join(datadir,'test.de.tok'),
                                  src_vocab=os.path.join(datadir,'vocab.de-en.de.pkl'),
-                                 src_vocab_size=30000)
+                                 src_vocab_size=config['src_vocab_size'])
     load_tedtalk = LoadData(saveto=config['saveto'])
     load_tedtalk.load_to(search_model)
-    with open(config['trg_vocab']) as f:
-        trg_vocab = pickle.load(f)
+    trg_vocab = config['trg_vocab']
+    trg_vocab = _ensure_special_tokens(
+            trg_vocab if isinstance(trg_vocab, dict) else
+            cPickle.load(open(trg_vocab)),
+            bos_idx=0, eos_idx=config['trg_vocab_size'] - 1, unk_idx=1)
     evaluator = Bleuevaluator(source_sentence=sampling_input,
                               data_stream=test_stream,
                               config=config,
                               samples=samples,
                               search_model_de2en=search_model,
                               trg_vocab=trg_vocab,
-                              val_set_grndtruth=os.path.join(datadir,'test.en'))
+                              val_set_grndtruth=os.path.join(datadir,'test.en'),
+                              n_best=20)
     evaluator.evaluate_model()
 
 
