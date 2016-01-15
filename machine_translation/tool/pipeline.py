@@ -13,10 +13,10 @@ from picklable_itertools.extras import equizip
 parser = argparse.ArgumentParser()
 parser.add_argument("--source_input",
                     type=str,
-                    help="The source input file name")
+                    help="The source train file name")
 parser.add_argument("--target_input",
                     type=str,
-                    help="The target input file name")
+                    help="The target train file name")
 parser.add_argument("--source",
                     type=str,
                     help="The source language")
@@ -25,22 +25,22 @@ parser.add_argument("--target",
                     help="The target language")
 parser.add_argument("--source_vocab",
                     type=str,
-                    help="The source language")
+                    help="The source vocabulary size")
 parser.add_argument("--target_vocab",
                     type=str,
-                    help="The target language")
+                    help="The target vocabulary size")
 parser.add_argument("--dev_source",
                     type=str,
-                    help="The source language")
+                    help="The source dev file name")
 parser.add_argument("--dev_target",
                     type=str,
-                    help="The target language")
+                    help="The target dev file name")
 parser.add_argument("--test_source",
                     type=str,
-                    help="The test source set")
+                    help="The source test file name ")
 parser.add_argument("--test_target",
                     type=str,
-                    help="The test target set")
+                    help="The target test file name")
 
 def tokenize_text_files(files_to_tokenize, tokenizer):
     for name in files_to_tokenize:
@@ -137,8 +137,9 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__name__)
     args = parser.parse_args()
-    #tokenize_text_files([args.source_input,args.target_input],'../tool/tokenizer.perl')
-    #tokenize_text_files([args.dev_source,args.dev_target],'../tool/tokenizer.perl')
-    #tokenize_text_files([args.test_source,args.test_target],'../tool/tokenizer.perl')
+    #shuffle_parallel(args.source_input,args.target_input)
+    tokenize_text_files([args.source_input,args.target_input],'../tool/tokenizer.perl')
+    tokenize_text_files([args.dev_source,args.dev_target],'../tool/tokenizer.perl')
+    tokenize_text_files([args.test_source,args.test_target],'../tool/tokenizer.perl')
     src_filename, trg_filename = create_vocabularies([args.source_input,args.target_input], '../tool/preprocess.py')
-    shuffle_parallel(src_filename,trg_filename)
+    

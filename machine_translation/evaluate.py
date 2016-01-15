@@ -61,9 +61,8 @@ if __name__ == "__main__":
         bricks=[decoder.sequence_generator], name="outputs")(
             ComputationGraph(generated[1]))  # generated[1] is next_outputs
     # Data directory
-    datadir = config['datadir']
-    test_stream = get_dev_stream(val_set= os.path.join(datadir,'test.de.tok'),
-                                 src_vocab=os.path.join(datadir,'vocab.de-en.de.pkl'),
+    test_stream = get_dev_stream(val_set= config['test_source'],
+                                 src_vocab=config['src_vocab'],
                                  src_vocab_size=config['src_vocab_size'])
     load_tedtalk = LoadData(saveto=config['saveto'])
     load_tedtalk.load_to(search_model)
@@ -78,7 +77,7 @@ if __name__ == "__main__":
                               samples=samples,
                               search_model_de2en=search_model,
                               trg_vocab=trg_vocab,
-                              val_set_grndtruth=os.path.join(datadir,'test.en'),
+                              val_set_grndtruth=config['test_target'],
                               n_best=20)
     evaluator.evaluate_model()
 

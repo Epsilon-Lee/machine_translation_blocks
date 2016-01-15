@@ -386,7 +386,7 @@ class Bleuevaluator(SamplingBase):
 
                 if j == 0:
                     # Write to subprocess and file if it exists
-                    print("{}: {}".format(str(i),trans_out))
+                    print(trans_out,file=mb_subprocess.stdin)
                     if self.verbose:
                         print(trans_out, file=ftrans)
             if i != 0 and i % 100 == 0:
